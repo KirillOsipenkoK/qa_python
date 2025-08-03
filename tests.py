@@ -1,25 +1,17 @@
 import pytest
 from main import BooksCollector
 
-@pytest.fixture
-def collector():
-    return BooksCollector()
-    assert len(collector.get_books_rating()) == 2
-    assert len(collector.get_books_genre()) == 2
 
-    # напиши свои тесты ниже
-    # чтобы тесты были независимыми в каждом из них создавай отдельный экземпляр класса BooksCollector()
-
+class TestBooksCollector:
     @pytest.fixture
     def collector(self):
         return BooksCollector()
 
-    # Параметризация для тестов с разной длиной имени
     @pytest.mark.parametrize('name, expected', [
-        ('A' * 40, True),  # Максимальная длина
-        ('Тест', True),  # Корректное имя
-        ('', False),  # Пустое имя
-        ('B' * 41, False)  # Слишком длинное
+        ('A' * 40, True),
+        ('Тест', True),
+        ('', False),
+        ('B' * 41, False)
     ])
     def test_add_new_book(self, collector, name, expected):
         collector.add_new_book(name)
@@ -30,11 +22,11 @@ def collector():
         collector.add_new_book('Дюна')
         assert len(collector.get_books_genre()) == 1
 
-    @pytest.mark.parametrize('name, genre, expected',
-                             ('Дюна', 'Фантастика', True),  # Корректные данные
-                             ('Несуществующая', 'Ужасы', False),  # Книги нет в словаре
-                             ('Дюна', 'Роман', False)  # Неверный жанр
-                             )
+    @pytest.mark.parametrize('name, genre, expected', [
+        ('Дюна', 'Фантастика', True),
+        ('Несуществующая', 'Ужасы', False),
+        ('Дюна', 'Роман', False)
+    ])
     def test_set_book_genre(self, collector, name, genre, expected):
         collector.add_new_book('Дюна')
         collector.set_book_genre(name, genre)
@@ -70,8 +62,8 @@ def collector():
             'Шерлок': 'Детективы'
         }
         for name, genre in test_books.items():
-            collector.add_new_book(name)  # Используем публичный метод
-            collector.set_book_genre(name, genre)  # Используем публичный метод
+            collector.add_new_book(name)
+            collector.set_book_genre(name, genre)
         children_books = collector.get_books_for_children()
         assert 'Ну погоди!' in children_books
         assert 'Оно' not in children_books
@@ -84,8 +76,7 @@ def collector():
     def test_add_book_in_favorites(self, collector, name, expected):
         collector.add_new_book('Дюна')
         collector.add_book_in_favorites(name)
-        favorites = collector.get_list_of_favorites_books()
-        assert (name in favorites) == expected
+        assert (name in collector.get_list_of_favorites_books()) == expected
 
     def test_add_duplicate_to_favorites(self, collector):
         collector.add_new_book('Дюна')
@@ -106,4 +97,3 @@ def collector():
         favorites = collector.get_list_of_favorites_books()
         assert favorites == ['Книга1']
         assert len(favorites) == 1
-
